@@ -1,5 +1,5 @@
 let score = 0;
-let radius = 1000;
+let radius = 100;
 let x, y;
 let r, g, b;
 let time = 5000; // for leveling up
@@ -36,7 +36,7 @@ function mousePressed(){
 		score++;
 		if (score%20==0){
 			time -= 1000;
-			radius -=200;
+			radius -=10;
 		}
 	}
 	else{
