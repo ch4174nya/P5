@@ -19,7 +19,7 @@ let locked = false;
 function setup() {
   createCanvas(windowWidth, windowHeight)
   strokeWeight(5);
-  paddleWidth = windowWidth/4;
+  paddleWidth = min(windowWidth/4, 100);
 
 }
 
