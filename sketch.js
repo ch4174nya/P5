@@ -1,46 +1,109 @@
 let score = 0;
-let radius = 100;
-let x, y;
-let r, g, b;
-let time = 5000; // for leveling up
+var xBall = Math.floor(Math.random() * 300) + 50;
+var yBall = 50;
+var diameter = 50;
 
-function newCircle(){
-	r = random(255);
-	g = random(255);
-	b = random(255);
-	x = random(windowWidth);
-	y = random(windowHeight);
-}
+var xBallChange = 10;
+var yBallChange = 10;
+
+var xPaddle;
+var yPaddle;
+var paddleWidth;
+var paddleHeight = 25;
+
+var started = false;
+let overPaddle = false;
+let locked = false;
+
+
 function setup() {
-  // createCanvas(400, 400);
   createCanvas(windowWidth, windowHeight)
-  newCircle();
+  strokeWeight(5);
+  paddleWidth = windowWidth/4;
+
 }
 
 function draw() {
-	background(220);
-	fill(r, g, b);
-	ellipse(x, y, radius*2, radius*2);
-	fill(0, 0, 0);
-	textSize(26);
-	textStyle(BOLD);
-	text("Score: " + score, 10, 20);
+  background(0);
+
+  fill(255, 255, 255);
+  textSize(26);
+  textStyle(BOLD);
+  noStroke();
+  text("Score: " + score, 10, 20);
+
+  fill(255, 0, 255);
+  ellipse(xBall, yBall, diameter, diameter);
+
+  xBall += xBallChange;
+  yBall += yBallChange;
+
+  if (xBall < diameter / 2 || xBall > windowWidth - 0.5 * diameter) {
+    xBallChange *= -1;
+  }
+  if (yBall < diameter / 2 || yBall > windowHeight - diameter) {
+    yBallChange *= -1;
+  }
+
+  if (xPaddle < xBall && xBall < xPaddle + paddleWidth && yBall + diameter / 2 >= yPaddle) {
+    xBallChange *= -1;
+    yBallChange *= -1;
+    score++;
+  }
+  if (yBall > windowHeight - diameter){
+  	score--;
+  }
+
+  // Test if the cursor is over the paddle
+  if (
+    mouseX > xPaddle - paddleWidth &&
+    mouseX < xPaddle + paddleWidth &&
+    mouseY > yPaddle - paddleHeight &&
+    mouseY < yPaddle + paddleHeight
+  ) {
+    overPaddle = true;
+    if (!locked) {
+      stroke(255);
+      fill(244, 122, 158);
+    }
+  } else {
+    noStroke();
+    fill(244, 122, 158);
+    overBox = false;
+  }
+
+
+
+  if (!started) {
+    xPaddle = windowWidth / 2;
+    yPaddle = windowHeight - 30; // 100px above the bottom of the screen
+    started = true;
+  }
+
+  fill(255, 255, 255);
+  rect(xPaddle, yPaddle, paddleWidth, paddleHeight);
 
 
 }
 
-function mousePressed(){
-	let d = dist(mouseX, mouseY, x, y);
-	if (d < radius){
-		newCircle();
-		score++;
-		if (score%20==0){
-			time -= 1000;
-			radius -=10;
-		}
-	}
-	else{
-		score--;
-	}
+function mousePressed() {
+  if (overPaddle) {
+    locked = true;
+    fill(255, 255, 255);
+  } else {
+    locked = false;
+  }
+  xOffset = mouseX - xPaddle;
+  // yOffset = mouseY - yPaddle;
 }
-setInterval(newCircle, time);
+
+function mouseDragged() {
+  if (locked) {
+    xPaddle = mouseX - xOffset;
+    // yPaddle = mouseY - yOffset;
+  }
+}
+
+function mouseReleased() {
+  locked = false;
+}
